@@ -1214,3 +1214,39 @@ kbd {
     transition: none !important;
   }
 }
+
+/* ---------- Site navigation (shared by both pages) ---------- */
+
+.site-nav {
+  display: flex;
+  gap: 0.2rem;
+  align-self: flex-end;
+  margin-bottom: 0.15rem;
+}
+
+.site-nav a {
+  font-family: var(--label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  padding: 0.2rem 0.6rem;
+  border-bottom: 2px solid transparent;
+}
+
+.site-nav a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--rule);
+}
+
+.site-nav a[aria-current='page'] {
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+
+.prose a {
+  color: var(--red);
+  text-underline-offset: 3px;
+}

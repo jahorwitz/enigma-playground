@@ -357,6 +357,10 @@ export const TOPICS: Topic[] = [
           Intelligence from Enigma decrypts, code-named <em>Ultra</em>, influenced the Battle of the Atlantic, the North
           African campaign and D-Day. Historians often estimate it shortened the war by two or more years.
         </p>
+        <p className="aside">
+          Try it yourself: <a href="./codebreaking.html">break an intercepted signal</a> with a crib, a menu and a
+          working Bombe.
+        </p>
       </>
     ),
   },

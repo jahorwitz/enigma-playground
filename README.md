@@ -7,8 +7,12 @@ An interactive, 3D Enigma I cipher machine for learning how Enigma worked.
 - **Follow the current**: the signal path diagram traces each key press through plugboard → rotors → reflector → back.
 - **Learn**: open the `?` markers on the machine or work through the 11 lessons, from the keyboard to how Bletchley Park broke it.
 - **Share**: copy the ciphertext and a link that loads your exact settings, so a friend can decrypt it.
+- **Break it** (`codebreaking.html`): work an intercepted signal the way Bletchley Park did. Place a crib, build
+  Turing's menu, run a working model of the Bombe (with Welchman's diagonal board) across all 60 wheel orders, then
+  finish the plugboard on the checking machine.
 
 The cipher engine (`src/enigma/engine.ts`) is checked against known test vectors, including the double-step anomaly.
+The Bombe (`src/codebreaking/bombe.ts`) is tested end to end: it must find the true key for freshly generated intercepts.
 
 ## Develop
 

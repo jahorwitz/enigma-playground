@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { ManualDrawer } from './components/ManualDrawer'
+import { SiteNav } from './components/SiteNav'
 import { SettingsPanel } from './components/SettingsPanel'
 import { SignalPath } from './components/SignalPath'
 import { TapePanel } from './components/TapePanel'
@@ -84,6 +85,7 @@ export default function App() {
       <header className="masthead">
         <div className="brand">
           <h1>Enigma</h1>
+          <SiteNav current="machine" />
           <p>
             A working replica of the Enigma I cipher machine. Set the key, type a message, and watch every wire it
             takes.
