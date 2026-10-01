@@ -9,7 +9,7 @@ const SPOTS: { topic: TopicId; at: [number, number, number] }[] = [
   { topic: 'rotors', at: [-0.48, ROTOR.axisY + 0.48, ROTOR.z] },
   { topic: 'stepping', at: [0.48, ROTOR.axisY + 0.48, ROTOR.z] },
   { topic: 'reflector', at: [ROTOR.reflectorX, ROTOR.axisY + 0.42, ROTOR.z] },
-  { topic: 'plugboard', at: [-1.5, 0.9, FRONT + 0.05] },
+  { topic: 'plugboard', at: [1.5, 0.14, FRONT + 0.05] },
 ]
 
 export function Hotspots() {
