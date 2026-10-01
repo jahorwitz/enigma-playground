@@ -1,4 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { FlatMachine } from './components/FlatMachine'
 import { ManualDrawer } from './components/ManualDrawer'
 import { SiteNav } from './components/SiteNav'
 import { SettingsPanel } from './components/SettingsPanel'
@@ -6,6 +8,7 @@ import { SignalPath } from './components/SignalPath'
 import { TapePanel } from './components/TapePanel'
 import { decodeKey } from './enigma/share'
 import { useEnigma } from './store'
+import { hasWebGL2 } from './three/webgl'
 
 const MachineScene = lazy(() => import('./three/MachineScene'))
 
@@ -73,6 +76,85 @@ function useMachineKeyboard() {
   }, [])
 }
 
+type FlatReason = 'unsupported' | 'crashed' | 'chosen'
+
+const VIEW_KEY = 'enigma.view'
+
+function initialView(): { flat: boolean; reason: FlatReason | null } {
+  if (!hasWebGL2()) return { flat: true, reason: 'unsupported' }
+  try {
+    if (localStorage.getItem(VIEW_KEY) === 'flat') return { flat: true, reason: 'chosen' }
+  } catch {
+    /* storage blocked: default to 3D */
+  }
+  return { flat: false, reason: null }
+}
+
+const FLAT_NOTES: Record<FlatReason, string> = {
+  unsupported: "This browser can't show the 3D machine (it needs WebGL 2), so here's the flat version. Everything else works the same.",
+  crashed: 'The 3D view stopped working on this device, so we switched to the flat version.',
+  chosen: 'Showing the flat version.',
+}
+
+function MachineStage({ fontsReady }: { fontsReady: boolean }) {
+  const [view, setView] = useState(initialView)
+  const goFlat = (reason: FlatReason) => setView({ flat: true, reason })
+  const remember = (flat: boolean) => {
+    try {
+      if (flat) localStorage.setItem(VIEW_KEY, 'flat')
+      else localStorage.removeItem(VIEW_KEY)
+    } catch {
+      /* ignore */
+    }
+  }
+
+  if (view.flat) {
+    return (
+      <div className="stage flat-stage">
+        <FlatMachine />
+        <div className="stage-note">
+          <span>{FLAT_NOTES[view.reason ?? 'chosen']}</span>
+          {view.reason !== 'unsupported' && (
+            <button
+              className="link"
+              onClick={() => {
+                remember(false)
+                setView({ flat: false, reason: null })
+              }}
+            >
+              Try 3D
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="stage">
+      <ErrorBoundary fallback={() => null} onError={() => goFlat('crashed')}>
+        {fontsReady ? (
+          <Suspense fallback={<div className="stage-loading">Assembling the machine…</div>}>
+            <MachineScene onContextLost={() => goFlat('crashed')} />
+          </Suspense>
+        ) : (
+          <div className="stage-loading">Assembling the machine…</div>
+        )}
+      </ErrorBoundary>
+      <p className="stage-hint">Click keys or type · drag to look around · click a rotor to turn it</p>
+      <button
+        className="stage-switch"
+        onClick={() => {
+          remember(true)
+          goFlat('chosen')
+        }}
+      >
+        Flat view
+      </button>
+    </div>
+  )
+}
+
 export default function App() {
   const fontsReady = useFontsReady()
   const hotspots = useEnigma((s) => s.hotspots)
@@ -107,14 +189,7 @@ export default function App() {
         </div>
 
         <div className="col-machine">
-          <div className="stage">
-            {fontsReady && (
-              <Suspense fallback={<div className="stage-loading">Assembling the machine…</div>}>
-                <MachineScene />
-              </Suspense>
-            )}
-            <p className="stage-hint">Click keys or type · drag to look around · click a rotor to turn it</p>
-          </div>
+          <MachineStage fontsReady={fontsReady} />
           <SignalPath />
         </div>
 

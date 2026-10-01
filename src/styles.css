@@ -78,7 +78,7 @@ kbd {
 
 /* ---------- Buttons ---------- */
 
-.app button:not(.hotspot, .plug, .link, .help-btn, .close, .segmented button, .stepper button, .manual-toc button) {
+.app button:not(.hotspot, .plug, .link, .help-btn, .close, .segmented button, .stepper button, .manual-toc button, .flat-key, .flat-fixed, .flat-rotor button) {
   font-family: var(--label);
   font-weight: 600;
   font-size: 0.95rem;
@@ -91,7 +91,7 @@ kbd {
   transition: background 0.15s var(--ease), color 0.15s var(--ease);
 }
 
-.app button:not(.hotspot, .plug, .link, .help-btn, .close, .segmented button, .stepper button, .manual-toc button):hover:not(:disabled) {
+.app button:not(.hotspot, .plug, .link, .help-btn, .close, .segmented button, .stepper button, .manual-toc button, .flat-key, .flat-fixed, .flat-rotor button):hover:not(:disabled) {
   background: var(--ink);
   color: var(--paper);
 }
@@ -1249,4 +1249,197 @@ kbd {
 .prose a {
   color: var(--red);
   text-underline-offset: 3px;
+}
+
+/* ---------- Flat (2D) machine, used without WebGL ---------- */
+
+.stage-switch {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 0.75rem !important;
+  padding: 0.25em 0.6em !important;
+  color: oklch(0.88 0.02 100) !important;
+  border-color: oklch(0.6 0.02 100 / 0.6) !important;
+  background: oklch(0.25 0.015 120 / 0.6) !important;
+}
+
+.stage.flat-stage {
+  height: auto;
+  padding: clamp(14px, 3vw, 28px) clamp(10px, 3vw, 28px) 12px;
+}
+
+.stage-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.8rem;
+  align-items: baseline;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: oklch(0.85 0.02 100);
+}
+
+.stage-note .link {
+  color: var(--amber);
+}
+
+.flat {
+  --k: min(2.6rem, calc((100vw - 64px) / 10.5));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 3vw, 22px);
+}
+
+.flat-rotors {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vw, 14px);
+  padding: 10px clamp(10px, 3vw, 18px);
+  background: oklch(0.24 0.012 70);
+  border-radius: 4px;
+  box-shadow: inset 0 2px 10px oklch(0.1 0.01 70 / 0.6);
+}
+
+.flat-rotor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.flat-rotor button,
+.flat-fixed {
+  background: none;
+  border: none;
+  color: oklch(0.8 0.03 85);
+  font-size: 0.85rem;
+  padding: 2px 10px;
+  line-height: 1;
+}
+
+.flat-rotor button:hover {
+  color: var(--amber);
+}
+
+.flat-rotor small,
+.flat-fixed small {
+  font-family: var(--label);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: oklch(0.7 0.03 85);
+}
+
+.flat-fixed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--label);
+  font-weight: 700;
+  font-size: 1rem;
+  color: oklch(0.75 0.02 85);
+  padding: 6px;
+}
+
+.flat-window {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(var(--k) * 1.1);
+  background: linear-gradient(oklch(0.72 0.03 85), oklch(0.93 0.025 88) 30%, oklch(0.93 0.025 88) 70%, oklch(0.72 0.03 85));
+  border-radius: 4px;
+  font-family: var(--type);
+  font-weight: 700;
+  line-height: 1.15;
+  overflow: hidden;
+}
+
+.flat-window .dim {
+  font-size: 0.75rem;
+  color: oklch(0.45 0.02 70);
+}
+
+.flat-window .cur {
+  font-size: 1.35rem;
+  color: var(--ink);
+  border-top: 2px solid #c9a85c;
+  border-bottom: 2px solid #c9a85c;
+  width: 100%;
+  text-align: center;
+}
+
+.flat-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.flat-row {
+  display: flex;
+  gap: calc(var(--k) * 0.18);
+}
+
+.flat-lamp,
+.flat-key {
+  width: var(--k);
+  height: var(--k);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--label);
+  font-weight: 700;
+  font-size: calc(var(--k) * 0.45);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.flat-lamp {
+  background: radial-gradient(circle at 50% 40%, oklch(0.93 0.02 90), oklch(0.78 0.03 85));
+  color: oklch(0.3 0.02 70);
+  box-shadow: 0 0 0 3px oklch(0.45 0.01 70);
+  transition: background 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.flat-lamp.on {
+  background: radial-gradient(circle at 50% 40%, oklch(0.98 0.08 95), oklch(0.82 0.17 75));
+  box-shadow: 0 0 0 3px oklch(0.6 0.08 75), 0 0 22px 6px oklch(0.8 0.17 75 / 0.65);
+  transition: none;
+}
+
+.flat-key {
+  border: 3px solid oklch(0.78 0.01 85);
+  background: oklch(0.2 0.01 70);
+  color: oklch(0.93 0.02 85);
+  padding: 0;
+  box-shadow: 0 3px 0 oklch(0.12 0.01 70);
+  transition: transform 0.06s, box-shadow 0.06s;
+  touch-action: manipulation;
+}
+
+.flat-key.down {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 oklch(0.12 0.01 70);
+}
+
+.flat-board.keys {
+  padding-top: 4px;
+}
+
+/* ---------- Crash screen ---------- */
+
+.crash {
+  max-width: 34rem;
+  margin: 15vh auto;
+  padding: 0 24px;
+}
+
+.crash h1 {
+  font-family: var(--display);
+  font-weight: 400;
+}
+
+.crash a {
+  color: var(--red);
 }

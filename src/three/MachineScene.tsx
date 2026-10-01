@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Canvas, useThree } from '@react-three/fiber'
 import { ContactShadows, Environment, Lightformer, OrbitControls } from '@react-three/drei'
 import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
@@ -8,6 +8,7 @@ import { Keyboard } from './Keyboard'
 import { Lampboard } from './Lampboard'
 import { Plugboard } from './Plugboard'
 import { FixedWheel, Rotor } from './Rotor'
+import { isLowPower } from './webgl'
 
 const TARGET: [number, number, number] = [0, 0.55, 0.05]
 const BASE_OFFSET: [number, number, number] = [0, 3.45, 4.35]
@@ -27,13 +28,34 @@ function FitCamera() {
   return null
 }
 
-export default function MachineScene() {
+export default function MachineScene({ onContextLost }: { onContextLost: () => void }) {
+  const low = isLowPower()
+  // three.js deliberately drops the context when the scene unmounts; that is not a crash.
+  const disposed = useRef(false)
+  const lostTimer = useRef(0)
+  useEffect(() => {
+    disposed.current = false
+    return () => {
+      disposed.current = true
+      clearTimeout(lostTimer.current)
+    }
+  }, [])
   return (
     <Canvas
       shadows
-      dpr={[1, 2]}
+      dpr={low ? [1, 1.5] : [1, 2]}
       camera={{ position: [0, 3.6, 4.9], fov: 36 }}
       onContextMenu={(e) => e.preventDefault()}
+      onCreated={({ gl }) => {
+        // Mobile GPUs can drop the context (memory pressure, app switching). three.js restores it
+        // when it can; if it hasn't come back after a few seconds, fall back to the flat machine.
+        const canvas = gl.domElement
+        canvas.addEventListener('webglcontextlost', () => {
+          if (disposed.current) return
+          lostTimer.current = window.setTimeout(() => !disposed.current && onContextLost(), 3000)
+        })
+        canvas.addEventListener('webglcontextrestored', () => clearTimeout(lostTimer.current))
+      }}
     >
       <color attach="background" args={['#3a3d33']} />
       <fog attach="fog" args={['#3a3d33', 9, 16]} />
@@ -43,14 +65,14 @@ export default function MachineScene() {
         position={[3, 6, 3]}
         intensity={1.8}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={low ? [1024, 1024] : [2048, 2048]}
         shadow-camera-left={-3}
         shadow-camera-right={3}
         shadow-camera-top={3}
         shadow-camera-bottom={-3}
         shadow-bias={-0.0005}
       />
-      <Environment resolution={256}>
+      <Environment resolution={low ? 128 : 256}>
         <Lightformer intensity={1.6} position={[0, 5, 2]} rotation-x={Math.PI / 2} scale={[8, 4, 1]} />
         <Lightformer intensity={0.8} position={[-5, 2, 1]} rotation-y={Math.PI / 2} scale={[6, 2, 1]} color="#ffe2b8" />
         <Lightformer intensity={0.5} position={[5, 2, -1]} rotation-y={-Math.PI / 2} scale={[6, 2, 1]} />
@@ -88,7 +110,7 @@ export default function MachineScene() {
         maxAzimuthAngle={1.2}
       />
 
-      <EffectComposer multisampling={4}>
+      <EffectComposer multisampling={low ? 0 : 4}>
         <Bloom mipmapBlur luminanceThreshold={1} intensity={0.8} radius={0.5} />
         <Vignette offset={0.3} darkness={0.55} />
       </EffectComposer>
