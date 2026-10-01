@@ -1,5 +1,7 @@
 # Enigma Playground
 
+**Live at [enigmamachine.app](https://enigmamachine.app)**
+
 An interactive, 3D Enigma I cipher machine for learning how Enigma worked.
 
 - **Set the daily key**: wheel order (rotors I–VIII), ring settings, start positions, reflector (UKW-A/B/C) and plugboard cables.
@@ -26,6 +28,7 @@ npm run dev
 ## Deploy
 
 Every push to `main` builds and deploys to GitHub Pages via `.github/workflows/deploy.yml`.
+The custom domain (`enigmamachine.app`) is set in the repo's Pages settings; DNS is hosted on Cloudflare.
 The Vite `base` is relative (`./`), so the site works under any repository name.
 
 Built with React, three.js (@react-three/fiber + drei), and zustand.
